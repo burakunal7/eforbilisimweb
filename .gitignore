@@ -1,0 +1,521 @@
+# Efor Bilişim Flask Projesi - .gitignore
+
+# Çevre değişkenleri (gizli bilgiler)
+.env
+.env.local
+.env.production
+.env.staging
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE ve Editör dosyaları
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# Log dosyaları
+*.log
+logs/
+log/
+
+# Veritabanı dosyaları
+*.db
+*.sqlite
+*.sqlite3
+quotes.json
+
+# Yüklenen dosyalar
+uploads/
+media/
+
+# Yedekleme dosyaları
+backup/
+*.bak
+*.backup
+*.old
+
+# Geçici dosyalar
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Sistem dosyaları
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# SSL sertifikaları
+*.pem
+*.key
+*.crt
+*.csr
+
+# Nginx
+nginx.conf
+sites-available/
+sites-enabled/
+
+# Systemd
+*.service
+
+# Gunicorn
+gunicorn.conf.py
+
+# Test dosyaları
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Node.js (eğer frontend build araçları kullanılırsa)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Bower (eğer kullanılırsa)
+bower_components/
+
+# Grunt (eğer kullanılırsa)
+.grunt
+
+# Bower (eğer kullanılırsa)
+bower_components/
+
+# SASS
+.sass-cache/
+
+# Less
+.less/
+
+# CSS
+*.css.map
+
+# JavaScript
+*.js.map
+
+# TypeScript
+*.tsbuildinfo
+
+# Webpack
+webpack-stats.json
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Ansible
+*.retry
+
+# Vagrant
+.vagrant/
+
+# Packer
+packer_cache/
+
+# Local development
+local_settings.py
+local.py
+
+# Production settings
+production.py
+staging.py
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+
+# Archive files
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# Compressed files
+*.gz
+*.bz2
+*.xz
+
+# Image files (eğer büyükse)
+*.psd
+*.ai
+*.eps
+*.tiff
+*.tif
+
+# Video files
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Audio files
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+
+# Document files
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# Font files (eğer büyükse)
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.eot
+
+# Database dumps
+*.sql
+*.dump
+
+# Configuration files (güvenlik için)
+config.py
+settings.py
+secrets.py
+
+# API keys and tokens
+api_keys.txt
+tokens.txt
+secrets.txt
+
+# Personal notes
+TODO.md
+NOTES.md
+CHANGELOG.md
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Cache directories
+.cache/
+cache/
+
+# Temporary directories
+tmp/
+temp/
+.tmp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment specific
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Backup and archive
+backup/
+archives/
+*.tar.gz
+*.zip
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript v1 declaration files
+typings/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 

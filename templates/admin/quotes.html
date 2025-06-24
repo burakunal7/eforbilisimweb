@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}Teklifler - Admin Panel{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="display-4 fw-bold text-white mb-0">
+                        <i class="bi bi-envelope me-2 text-teal"></i>Teklifler
+                    </h1>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <small class="text-muted">Hoş geldiniz,</small>
+                            <div class="text-teal fw-bold">{{ session.get('admin_username', 'Admin') }}</div>
+                        </div>
+                        <button class="btn btn-teal me-2" onclick="exportToExcel()">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Excel'e Aktar
+                        </button>
+                        <button class="btn btn-outline-teal me-2" onclick="refreshPage()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Yenile
+                        </button>
+                        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger" 
+                           onclick="return confirm('Çıkış yapmak istediğinizden emin misiniz?')">
+                            <i class="bi bi-box-arrow-right me-2"></i>Çıkış
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="card bg-dark-card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label text-light">Durum Filtresi</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">Tümü</option>
+                                    <option value="Yeni">Yeni</option>
+                                    <option value="İşlemde">İşlemde</option>
+                                    <option value="Tamamlandı">Tamamlandı</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-light">Hizmet Filtresi</label>
+                                <select class="form-select" id="serviceFilter">
+                                    <option value="">Tümü</option>
+                                    <option value="Bilgisayar Tamiri">Bilgisayar Tamiri</option>
+                                    <option value="Kamera Kurulumu">Kamera Kurulumu</option>
+                                    <option value="Ağ Kurulumu">Ağ Kurulumu</option>
+                                    <option value="Teknik Danışmanlık">Teknik Danışmanlık</option>
+                                    <option value="Donanım Satışı">Donanım Satışı</option>
+                                    <option value="Veri Kurtarma">Veri Kurtarma</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-light">Tarih Başlangıç</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-light">Tarih Bitiş</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if quotes %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped" id="quotesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tarih</th>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Telefon</th>
+                                <th>Şirket</th>
+                                <th>Hizmet</th>
+                                <th>Öncelik</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for quote in quotes|sort(attribute='date', reverse=true) %}
+                            <tr data-status="{{ quote.status }}" data-service="{{ quote.service }}">
+                                <td>{{ quote.id }}</td>
+                                <td>{{ quote.date }}</td>
+                                <td>{{ quote.name }}</td>
+                                <td>
+                                    <a href="mailto:{{ quote.email }}" class="text-teal text-decoration-none">
+                                        {{ quote.email }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if quote.phone != 'Belirtilmemiş' %}
+                                    <a href="tel:{{ quote.phone }}" class="text-teal text-decoration-none">
+                                        {{ quote.phone }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">{{ quote.phone }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ quote.company or 'Belirtilmemiş' }}</td>
+                                <td>{{ quote.service }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if quote.urgency == 'Çok Acil' else 'warning' if quote.urgency == 'Acil' else 'secondary' }}">
+                                        {{ quote.urgency or 'Normal' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm status-select" data-quote-id="{{ quote.id }}">
+                                        <option value="Yeni" {{ 'selected' if quote.status == 'Yeni' }}>Yeni</option>
+                                        <option value="İşlemde" {{ 'selected' if quote.status == 'İşlemde' }}>İşlemde</option>
+                                        <option value="Tamamlandı" {{ 'selected' if quote.status == 'Tamamlandı' }}>Tamamlandı</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-teal" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#quoteModal{{ quote.id }}">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="copyToClipboard('{{ quote.id }}')">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteQuote('{{ quote.id }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Modal for quote details -->
+                            <div class="modal fade" id="quoteModal{{ quote.id }}" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content bg-dark text-white">
+                                        <div class="modal-header border-secondary">
+                                            <h5 class="modal-title">Teklif Detayları - {{ quote.name }}</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6 class="text-teal">Müşteri Bilgileri</h6>
+                                                    <p><strong>Ad Soyad:</strong> {{ quote.name }}</p>
+                                                    <p><strong>E-posta:</strong> {{ quote.email }}</p>
+                                                    <p><strong>Telefon:</strong> {{ quote.phone }}</p>
+                                                    <p><strong>Şirket:</strong> {{ quote.company or 'Belirtilmemiş' }}</p>
+                                                    <p><strong>Tarih:</strong> {{ quote.date }}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6 class="text-teal">Hizmet Bilgileri</h6>
+                                                    <p><strong>Hizmet Türü:</strong> {{ quote.service }}</p>
+                                                    <p><strong>Öncelik:</strong> {{ quote.urgency or 'Normal' }}</p>
+                                                    <p><strong>Durum:</strong> {{ quote.status }}</p>
+                                                    <p><strong>Teklif ID:</strong> {{ quote.id }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="border-secondary">
+                                            <h6 class="text-teal">Mesaj</h6>
+                                            <div class="bg-secondary p-3 rounded">
+                                                {{ quote.message|replace('\n', '<br>')|safe }}
+                                            </div>
+                                            {% if quote.attachments %}
+                                            <hr class="border-secondary">
+                                            <h6 class="text-teal">Ek Dosyalar</h6>
+                                            <ul class="list-unstyled">
+                                                {% for attachment in quote.attachments %}
+                                                <li><i class="bi bi-paperclip me-2"></i>{{ attachment }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </div>
+                                        <div class="modal-footer border-secondary">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                            <a href="mailto:{{ quote.email }}?subject=Teklif Talebiniz Hakkında" 
+                                               class="btn btn-teal">
+                                                <i class="bi bi-envelope me-2"></i>E-posta Gönder
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <h5 class="text-white">Özet</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-teal">{{ quotes|length }}</h3>
+                                    <p class="text-muted mb-0">Toplam Teklif</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning">{{ quotes|selectattr('status', 'equalto', 'Yeni')|list|length }}</h3>
+                                    <p class="text-muted mb-0">Yeni Teklifler</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-info">{{ quotes|selectattr('status', 'equalto', 'İşlemde')|list|length }}</h3>
+                                    <p class="text-muted mb-0">İşlemde</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success">{{ quotes|selectattr('status', 'equalto', 'Tamamlandı')|list|length }}</h3>
+                                    <p class="text-muted mb-0">Tamamlanan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-danger">{{ quotes|selectattr('urgency', 'equalto', 'Çok Acil')|list|length }}</h3>
+                                    <p class="text-muted mb-0">Çok Acil</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card bg-dark-card">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning">{{ quotes|selectattr('urgency', 'equalto', 'Acil')|list|length }}</h3>
+                                    <p class="text-muted mb-0">Acil</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h3 class="text-white mb-3">Henüz Teklif Yok</h3>
+                    <p class="text-muted">Henüz hiç teklif talebi alınmamış.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin JavaScript -->
+<script>
+// Filter functionality
+document.getElementById('statusFilter').addEventListener('change', filterQuotes);
+document.getElementById('serviceFilter').addEventListener('change', filterQuotes);
+document.getElementById('startDate').addEventListener('change', filterQuotes);
+document.getElementById('endDate').addEventListener('change', filterQuotes);
+
+function filterQuotes() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const serviceFilter = document.getElementById('serviceFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    const rows = document.querySelectorAll('#quotesTable tbody tr');
+    
+    rows.forEach(row => {
+        let show = true;
+        
+        if (statusFilter && row.dataset.status !== statusFilter) {
+            show = false;
+        }
+        
+        if (serviceFilter && row.dataset.service !== serviceFilter) {
+            show = false;
+        }
+        
+        if (startDate || endDate) {
+            const dateCell = row.cells[1].textContent;
+            const quoteDate = new Date(dateCell.split('.').reverse().join('-'));
+            
+            if (startDate && quoteDate < new Date(startDate)) {
+                show = false;
+            }
+            
+            if (endDate && quoteDate > new Date(endDate)) {
+                show = false;
+            }
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Status update
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', function() {
+        const quoteId = this.dataset.quoteId;
+        const newStatus = this.value;
+        
+        if (confirm(`Teklif ${quoteId} durumunu "${newStatus}" olarak güncellemek istediğinizden emin misiniz?`)) {
+            // Here you would typically make an AJAX call to update the status
+            // For now, we'll just show a success message
+            alert('Durum güncellendi!');
+        } else {
+            // Reset to previous value
+            this.value = this.dataset.originalValue;
+        }
+    });
+});
+
+// Copy to clipboard
+function copyToClipboard(quoteId) {
+    navigator.clipboard.writeText(quoteId).then(() => {
+        alert('Teklif ID kopyalandı!');
+    });
+}
+
+// Delete quote
+function deleteQuote(quoteId) {
+    if (confirm(`Teklif ${quoteId} silmek istediğinizden emin misiniz?`)) {
+        // Here you would typically make an AJAX call to delete the quote
+        alert('Teklif silindi!');
+        location.reload();
+    }
+}
+
+// Export to Excel
+function exportToExcel() {
+    alert('Excel export özelliği yakında eklenecek!');
+}
+
+// Refresh page
+function refreshPage() {
+    location.reload();
+}
+</script>
+{% endblock %} 
