@@ -518,4 +518,14 @@ temp/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db 
+Thumbs.db
+
+# Environment Variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Local configuration
+config.local.py
+settings.local.py 
